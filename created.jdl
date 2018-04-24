@@ -1,0 +1,205 @@
+entity CNUser {
+	place String required,
+	state String required,
+	phone String required,
+	country String required,
+	//preferredMassLanguage,
+	canAdd Boolean,
+	canReview Boolean
+}
+
+
+relationship OneToMany {
+  CNUser{user} to User
+}
+
+entity LanguageMaster {
+	name String required,
+	status String required minlength(1) maxlength(1)	
+}
+
+relationship OneToMany {
+  CNUser{preferredMassLanguage} to LanguageMaster
+}
+
+entity ChurchType {
+	type String required
+}
+
+relationship OneToMany {
+  ChurchType{parentType} to ChurchType
+}
+
+entity ChurchSubType {
+	type String required
+}
+
+relationship OneToMany {
+  ChurchSubType{churchType} to ChurchType
+}
+
+relationship OneToMany {
+  CNUser{preferredChurchType} to ChurchType
+}
+
+entity Church {
+	name String required,
+	locality String required,
+	place String required,
+	district String required,
+	state String required,
+	country String required,
+	pincode String required,
+	longitude String,
+	latitude String,
+	actual_address String,//This should be auto generated
+	saint String required,
+	//churchCategory String required,
+	//churchType
+	//vicar
+	vicarSince LocalDate,
+	//images
+	//createdBy
+	createdDate LocalDate,
+	updatedDate LocalDate,
+	//updatedBy
+	vicarDetailsAvailable Boolean,
+	massTimingAvaliable Boolean,
+	galaryAvailable Boolean,
+	confessionTimingAvailable Boolean,
+	novenaDetailsAvailable Boolean,
+	churchHighlight_1 String,
+	churchHighlight_2 String,
+	churchHighlight_3 String,
+	churchHighlight_4 String,
+	churchHighlight_5 String,
+	churchHighlight_6 String,
+	churchHighlight_7 String,
+	churchHighlight_8 String,
+	//reviewedBy
+	status String required minlength(1) maxlength(1)
+}
+
+entity ChurchImages {
+	imagePath String required,
+	imageType String
+	
+}
+relationship OneToMany {
+  ChurchImages{church} to Church
+}
+
+relationship OneToMany {
+  Church{churchType} to ChurchType
+}
+
+relationship OneToMany {
+  Church{churchSubType} to ChurchSubType
+}
+
+relationship OneToMany {
+  Church{createdBy} to CNUser
+}
+
+relationship OneToMany {
+  Church{updatedBy} to CNUser
+}
+
+relationship OneToMany {
+  Church{reviewedBy} to CNUser
+}
+
+entity Vicar {
+	name String required,
+	homeTown String,
+	//vicarImage 
+	//vicarAt
+	highlight_1 String,
+	highlight_2 String,
+	highlight_3 String,
+	highlight_4 String,
+	highlight_5 String,
+	//createdBy
+	createdDate LocalDate,
+	//updatedBy
+	updatedDate LocalDate
+	
+}
+
+entity VicarImages {
+	imagePath String required,
+	imageType String
+	
+}
+
+relationship OneToMany {
+  VicarImages{vicar} to Vicar
+}
+
+relationship OneToMany {
+  Vicar{vicarAt} to Church
+}
+
+relationship OneToMany {
+  Vicar{createdBy} to CNUser
+}
+
+relationship OneToMany {
+  Vicar{updatedBy} to CNUser
+}
+
+entity LocalitySuggester {
+	locality String,
+	place String,
+	distrct String,
+	state String,
+	country String
+}
+
+entity ChurchNote {
+	//church
+	fromDate LocalDate,
+	toDate LocalDate,
+	fromTime Long,
+	toTime Long,
+	//noteType 
+	description String
+}
+
+entity NoteTypeMaster {
+	name String,
+	description String
+}
+
+relationship OneToMany {
+  ChurchNotes{church} to Church
+}
+
+relationship OneToMany {
+  ChurchNotes{noteType} to NoteTypeMaster
+}
+
+
+entity ConfessionTiming {
+	//Church
+	fromDate LocalDate,
+	toDate LocalDate,
+	fromTime Long,
+	toTime Long,
+	location String,
+	note String
+}
+
+relationship OneToMany {
+  ConfessionTiming{church} to Church
+}
+
+entity MassTiming {
+	//Church
+	fromDate LocalDate,
+	toDate LocalDate,
+	fromTime Long,
+	toTime Long,
+	location String,
+	note String
+}
