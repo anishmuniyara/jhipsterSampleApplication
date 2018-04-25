@@ -66,7 +66,7 @@ relationship OneToMany {
  * Contains the information such name, location, highlight informations.
  */
 entity Church {
-	name String required,
+	name String required pattern(/[A-Za-z\d\-_\s]+/),
 	locality String required,
 	place String required,
 	district String required,
@@ -366,6 +366,43 @@ relationship OneToMany {
   ConfessionTimingJob{church} to Church
 }
 
-paginate Category with pagination
+
+
+/**
+ * Church permission for each user
+ */
+entity UserChurchPermission {
+	canEdit Boolean,
+	canReview Boolean
+}
+
+relationship OneToMany {
+  UserChurchPermission{church} to Church
+}
+
+relationship OneToMany {
+  UserChurchPermission{user} to CNUser
+}
+
+paginate UserChurchPermission with infinite-scroll
+paginate ConfessionTimingJob with infinite-scroll
+paginate ChurchTimingJob with infinite-scroll
+paginate UserFavorates with infinite-scroll
+paginate MassType with infinite-scroll
+paginate NovenaType with infinite-scroll
+paginate MassTiming with infinite-scroll
+paginate ConfessionTiming with infinite-scroll
+paginate ChurchNote with infinite-scroll
+paginate NoteTypeMaster with infinite-scroll
+paginate LocalitySuggester with infinite-scroll
+paginate VicarImages with infinite-scroll
+paginate Vicar with infinite-scroll
+paginate ChurchImages with infinite-scroll
+paginate Church with infinite-scroll
+paginate ChurchSubType with infinite-scroll
+paginate ChurchType with infinite-scroll
+paginate CNUser with infinite-scroll
+//paginate Address with pager
+//paginate Product with infinite-scroll
 dto * with mapstruct
 service all with serviceImpl
