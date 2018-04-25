@@ -1,9 +1,12 @@
+/**
+ * The extended user table. 
+ * contains churchnear specific information.
+ */
 entity CNUser {
 	place String required,
 	state String required,
 	phone String required,
 	country String required,
-	//preferredMassLanguage,
 	canAdd Boolean,
 	canReview Boolean
 }
@@ -13,23 +16,42 @@ relationship OneToMany {
   CNUser{user} to User
 }
 
+relationship OneToMany {
+  CNUser{preferredMassLanguage} to LanguageMaster
+}
+
+relationship OneToMany {
+  CNUser{preferredChurchType} to ChurchType
+}
+
+/**
+ * The master table which store the language information. 
+ * This should be filled while system setup.
+ */
 entity LanguageMaster {
 	name String required,
 	status String required minlength(1) maxlength(1)	
 }
 
-relationship OneToMany {
-  CNUser{preferredMassLanguage} to LanguageMaster
-}
-
+/**
+ * Master table for explaining the church type. 
+ * Catholic, RCSC, Jacobite, are the examples.
+ */
 entity ChurchType {
 	type String required
 }
+
+
 
 relationship OneToMany {
   ChurchType{parentType} to ChurchType
 }
 
+
+/**
+ * Explains the type of the church. 
+ * Forone church, Pligrim center are the example.
+ */
 entity ChurchSubType {
 	type String required
 }
@@ -38,10 +60,11 @@ relationship OneToMany {
   ChurchSubType{churchType} to ChurchType
 }
 
-relationship OneToMany {
-  CNUser{preferredChurchType} to ChurchType
-}
 
+/**
+ * Complete information regarding the church. 
+ * Contains the information such name, location, highlight informations.
+ */
 entity Church {
 	name String required,
 	locality String required,
@@ -54,15 +77,9 @@ entity Church {
 	latitude String,
 	actual_address String,//This should be auto generated
 	saint String required,
-	//churchCategory String required,
-	//churchType
-	//vicar
 	vicarSince LocalDate,
-	//images
-	//createdBy
 	createdDate LocalDate,
 	updatedDate LocalDate,
-	//updatedBy
 	vicarDetailsAvailable Boolean,
 	massTimingAvaliable Boolean,
 	galaryAvailable Boolean,
@@ -78,15 +95,6 @@ entity Church {
 	churchHighlight_8 String,
 	//reviewedBy
 	status String required minlength(1) maxlength(1)
-}
-
-entity ChurchImages {
-	imagePath String required,
-	imageType String
-	
-}
-relationship OneToMany {
-  ChurchImages{church} to Church
 }
 
 relationship OneToMany {
@@ -109,6 +117,29 @@ relationship OneToMany {
   Church{reviewedBy} to CNUser
 }
 
+relationship ManyToOne {
+  Church{images} to ChurchImages
+}
+
+
+/**
+ * Set of images for the church. 
+ * Images are categorized based on its type.
+ */
+entity ChurchImages {
+	imagePath String required,
+	imageType String
+	
+}
+relationship OneToMany {
+  ChurchImages{church} to Church
+}
+
+
+/**
+ * Vicar information. 
+ * Explains the details of vicar.
+ */
 entity Vicar {
 	name String required,
 	homeTown String,
@@ -126,16 +157,6 @@ entity Vicar {
 	
 }
 
-entity VicarImages {
-	imagePath String required,
-	imageType String
-	
-}
-
-relationship OneToMany {
-  VicarImages{vicar} to Vicar
-}
-
 relationship OneToMany {
   Vicar{vicarAt} to Church
 }
@@ -148,6 +169,29 @@ relationship OneToMany {
   Vicar{updatedBy} to CNUser
 }
 
+relationship ManyToOne {
+  Vicar{images} to VicarImages
+}
+
+/**
+ * Images of Vicar. 
+ * Contains the set of images of vicars.
+ */
+entity VicarImages {
+	imagePath String required,
+	imageType String
+	
+}
+
+relationship OneToMany {
+  VicarImages{vicar} to Vicar
+}
+
+
+/**
+ * Locality Suggest master table. 
+ * For auto filling purpose.
+ */
 entity LocalitySuggester {
 	locality String,
 	place String,
@@ -155,51 +199,173 @@ entity LocalitySuggester {
 	state String,
 	country String
 }
-
-entity ChurchNote {
-	//church
-	fromDate LocalDate,
-	toDate LocalDate,
-	fromTime Long,
-	toTime Long,
-	//noteType 
-	description String
-}
-
+/**
+ * Special notes master table. 
+ * convension, first holy mass are the examples.
+ */
 entity NoteTypeMaster {
 	name String,
 	description String
 }
 
-relationship OneToMany {
-  ChurchNotes{church} to Church
-}
 
-relationship OneToMany {
-  ChurchNotes{noteType} to NoteTypeMaster
-}
-
-
-entity ConfessionTiming {
-	//Church
+/**
+ * Information about the special occasions. 
+ */
+entity ChurchNote {
 	fromDate LocalDate,
 	toDate LocalDate,
 	fromTime Long,
 	toTime Long,
+	description String
+}
+
+
+
+relationship OneToMany {
+  ChurchNote{church} to Church
+}
+
+relationship OneToMany {
+  ChurchNote{noteType} to NoteTypeMaster
+}
+
+
+/**
+ * Images of Vicar. 
+ * Contains the set of images of vicars.
+ */
+entity ConfessionTiming {
+	confessionDate LocalDate,
+	fromTime Long,
+	toTime Long,
 	location String,
-	note String
+	note String,
+    isDateLocked Boolean
 }
 
 relationship OneToMany {
   ConfessionTiming{church} to Church
 }
 
+/**
+ * Details about mass timing. 
+ * Each day mass timing.
+ */
 entity MassTiming {
-	//Church
-	fromDate LocalDate,
-	toDate LocalDate,
-	fromTime Long,
-	toTime Long,
-	location String,
-	note String
+    dateTime ZonedDateTime required,
+    isSpecialMass Boolean,
+    description String,
+    note String,
+    isDateLocked Boolean
 }
+
+relationship OneToMany {
+  MassTiming{language} to LanguageMaster
+}
+
+relationship OneToMany {
+  MassTiming{novenaType} to NovenaType
+}
+
+relationship OneToMany {
+  MassTiming{vicar} to Vicar
+}
+
+entity NovenaType {
+    name String required,
+    description String
+
+}
+
+relationship OneToMany {
+  NovenaType{churchType} to ChurchType
+}
+
+/**
+ * Master table of description about the mass. 
+ * Detaild mass, mass with novena, etc.
+ */
+entity MassType {
+    name String required,
+    haveNovena Boolean
+
+}
+
+
+
+
+
+relationship OneToMany {
+  MassType{churchType} to ChurchType
+}
+
+/**
+ * User favorate church
+ */
+entity UserFavorates {
+
+}
+
+relationship OneToMany {
+  UserFavorates{church} to Church
+}
+
+relationship OneToMany {
+  UserFavorates{cnUser} to CNUser
+}
+
+
+
+
+/**
+ * Church timing job entry
+ */
+entity ChurchTimingJob {
+    day String,
+    time Long,
+    lastRun ZonedDateTime,
+    nextRun ZonedDateTime,
+    defaultNote String
+}
+
+relationship OneToMany {
+  ChurchTimingJob{church} to Church
+}
+
+relationship OneToMany {
+  ChurchTimingJob{massType} to MassType
+}
+
+relationship OneToMany {
+  ChurchTimingJob{language} to LanguageMaster
+}
+
+relationship OneToMany {
+  ChurchTimingJob{novenaType} to NovenaType
+}
+
+relationship OneToMany {
+  ChurchTimingJob{vicar} to Vicar
+}
+
+/**
+ * Confession timing job entries
+ */
+entity ConfessionTimingJob {
+    day String,
+    fromTime Long,
+    toTime Long,
+    lastRun ZonedDateTime,
+    nextRun ZonedDateTime,
+    location String,
+    defaultNote String
+}
+
+relationship OneToMany {
+  ConfessionTimingJob{church} to Church
+}
+
+paginate Category with pagination
+dto * with mapstruct
+service all with serviceImpl
